@@ -1,0 +1,95 @@
+# FloatingPortal
+
+Portals your floating element outside the main app node.
+
+```js
+import {FloatingPortal} from '@floating-ui/react';
+
+function Tooltip() {
+  return (
+    <FloatingPortal>
+      {open && <div>My portalled element</div>}
+    </FloatingPortal>
+  );
+}
+```
+
+<Notice type="error" title="Important">
+  Don't conditionally render the FloatingPortal, only its
+  children as seen above.
+</Notice>
+
+## Props
+
+```js
+interface Props {
+  id?: string;
+  root?: HTMLElement | null;
+  preserveTabOrder?: boolean;
+}
+```
+
+### id
+
+default: `undefined{:js}`
+
+If this node does not exist on the document, it will be created
+for you and will be appended to the end of the `<body>{:html}`. A
+unique React id is assigned to it. Context is provided so that
+portals nested in one another are appended to their respective
+parent.
+
+By specifying a string, it assumes the container is being
+controlled externally or is static.
+
+```js
+<FloatingPortal id="custom-root-id">
+  {open && <div>Tooltip</div>}
+</FloatingPortal>
+```
+
+### root
+
+Alternatively, you may pass the root element itself, which
+supports shadow roots.
+
+```js
+<FloatingPortal root={shadowRootNode}>
+  {open && <div>Tooltip</div>}
+</FloatingPortal>
+```
+
+### preserveTabOrder
+
+default: `true{:js}`
+
+When using non-modal focus management using
+`<FloatingFocusManager />{:js}`, this will preserve the tab order
+context based on the React tree instead of the DOM tree.
+
+```js
+<FloatingPortal preserveTabOrder={false}>
+  {open && <div>Tooltip</div>}
+</FloatingPortal>
+```
+
+## useFloatingPortalNode
+
+Exposes the portal container node for custom use in other
+components. The hook injects the node, if it does not yet exist
+in the DOM.
+
+```js
+function App() {
+  const portalNode = useFloatingPortalNode({
+    id: 'custom-root-id', // 'floating-ui-root' by default
+    enabled: false, // true by default
+  });
+
+  if (portalNode) {
+    return ReactDOM.createPortal(<div></div>, portalNode);
+  }
+
+  return null;
+}
+```

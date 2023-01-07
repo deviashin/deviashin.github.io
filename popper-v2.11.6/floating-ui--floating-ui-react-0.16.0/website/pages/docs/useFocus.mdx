@@ -1,0 +1,54 @@
+# useFocus
+
+Adds focus event listeners that change the open state, like CSS
+`:focus{:.objectKey}`.
+
+```js
+import {useFocus} from '@floating-ui/react';
+```
+
+Inside your component:
+
+```js /useFocus/
+const {context} = useFloating();
+const focus = useFocus(context);
+const {getReferenceProps, getFloatingProps} = useInteractions([
+  focus,
+]);
+```
+
+## Props
+
+```js
+interface Props {
+  enabled?: boolean;
+  keyboardOnly?: boolean;
+}
+```
+
+### enabled
+
+default: `true{:js}`
+
+Conditionally enable/disable the hook.
+
+```js
+useFocus(context, {
+  enabled: false,
+});
+```
+
+### keyboardOnly
+
+default: `true{:js}`
+
+Whether the state only changes if the `focus{:.string}` event was
+triggered via keyboard rather than any pointer inputs
+(mouse/touch/pen). Programmatic `.focus(){:js}` calls are
+considered as keyboard.
+
+```js
+useFocus(context, {
+  keyboardOnly: false,
+});
+```

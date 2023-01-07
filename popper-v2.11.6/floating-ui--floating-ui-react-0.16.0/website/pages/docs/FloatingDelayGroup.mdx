@@ -1,0 +1,117 @@
+# FloatingDelayGroup
+
+Provides context for a group of floating elements that should
+share a `delay{:.objectKey}` which temporarily becomes `1{:js}`
+ms after the first floating element of the group opens.
+
+This allows higher discovery of floating elements when they have
+a hover delay (like tooltips) when their reference elements are
+placed near each other.
+
+[View example on CodeSandbox](https://codesandbox.io/s/clever-aryabhata-yq3xyc?file=/src/Group.tsx)
+
+```js
+import {FloatingDelayGroup} from '@floating-ui/react';
+
+function App() {
+  return (
+    <FloatingDelayGroup delay={{open: 1000, close: 200}}>
+      <Tooltip label="One">
+        <button>Ref</button>
+      </Tooltip>
+      <Tooltip label="Two">
+        <button>Ref</button>
+      </Tooltip>
+      <Tooltip label="Three">
+        <button>Ref</button>
+      </Tooltip>
+    </FloatingDelayGroup>
+  );
+}
+```
+
+## Example
+
+Relevant APIs to use with a `<FloatingDelayGroup />{:js}`:
+
+- `useDelayGroupContext(){:js}`
+- `useDelayGroup(){:js}`
+
+Wrap your `onOpenChange{:.fn}` callback with one that sets the
+current id of the delay group context to the current component.
+
+<Notice>
+  The `id` must be unique. The label of a tooltip for example is
+  usually unique in a given group.
+</Notice>
+
+```js {2,11,17,20} /delay/
+function Tooltip({label}) {
+  const {delay, setCurrentId} = useDelayGroupContext();
+  const [open, setOpen] = useState(false);
+
+  const {context} = useFloating({
+    open,
+    onOpenChange(open) {
+      setOpen(open);
+
+      if (open) {
+        setCurrentId(label);
+      }
+    },
+  });
+
+  const {getReferenceProps, getFloatingProps} = useInteractions([
+    useHover(context, {delay}),
+  ]);
+
+  useDelayGroup(context, {id: label});
+
+  // ...
+}
+```
+
+## Props
+
+```js
+interface Props {
+  delay: Delay;
+  timeoutMs?: number;
+}
+```
+
+### delay
+
+**Required**
+
+default: `0{:js}`
+
+The delay to use for the group.
+
+```js
+<FloatingDelayGroup
+  // Both open and close
+  delay={200}
+  // Or, configured individually
+  delay={{open: 1000, close: 200}}
+>
+  {/* ... */}
+</FloatingDelayGroup>
+```
+
+### timeoutMs
+
+<Notice type="version">Since `v0.15.0`</Notice>
+
+default: `0{:js}`
+
+An optional explicit timeout to use for the group, which
+represents when grouping logic will no longer be active. This is
+useful if you want grouping to "last" longer than the close
+delay, for example if there is no close delay at all.
+
+```js
+<FloatingDelayGroup timeoutMs={1000}>
+  {/* ... */}
+</FloatingDelayGroup>
+```
